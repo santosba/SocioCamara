@@ -1,0 +1,29 @@
+stages:
+  - test
+  - deploy
+  - production
+
+test:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - pytest  # Replace with your actual test command
+  artifacts:
+    paths:
+      - test-reports/  # Adjust to your test report directory if needed
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Deploying to staging environment..."
+    - ./deploy-scripts/deploy-staging.sh  # Replace with your actual deploy script
+  only:
+    - main  # Adjust to your branch name if needed
+
+production:
+  stage: production
+  script:
+    - echo "Deploying to production environment..."
+    - ./deploy-scripts/deploy-production.sh  # Replace with your actual deploy script
+  only:
+    - tags  # Adjust to your production deployment trigger if needed

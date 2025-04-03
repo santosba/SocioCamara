@@ -1,0 +1,26 @@
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Sign Up{% endblock title %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {% if user.is_authenticated %}
+                <p>You are already signed up and logged in.</p>
+            {% else %}
+                <h2 class="text-center">Sign Up</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary mt-3">Sign Up</button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -1,0 +1,55 @@
+version: '3.8'
+
+networks:
+  app-network:
+    driver: bridge
+
+services:
+  postgres:
+    env_file: 
+      - ./backend/.env
+    container_name: postgres_container
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  backend:
+    container_name: djago_container
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  frontend:
+    container_name: vuejs_container
+    build: ./frontend
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/front
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
