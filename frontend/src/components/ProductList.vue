@@ -24,7 +24,7 @@ export default {
     methods: {
         async fetchProducts() {
             try {
-                const response = await axios.get(this.url + 'users');
+                const response = await axios.get(this.url + 'products');
                 this.products = response.data;
                 console.log('Products:', this.products);
             } catch (error) {

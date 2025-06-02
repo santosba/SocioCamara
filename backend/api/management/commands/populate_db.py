@@ -71,4 +71,4 @@ class Command(BaseCommand):
             order.total = order_total
             order.save()
 
-        self.stdout.write(self.style.SUCCESS('Successfully populated database'))
+        self.stdout.write(self.style.SUCCESS('Successfully populated database'))  

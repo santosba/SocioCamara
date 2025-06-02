@@ -52,7 +52,10 @@ INSTALLED_APPS = [
     'allauth',  # Add this line
     'allauth.account',  # Add this line
     'allauth.socialaccount', 
+    'corsheaders',# Add this line
+    
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -62,7 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware'
+    'allauth.account.middleware.AccountMiddleware',  # 
+    'corsheaders.middleware.CorsMiddleware',
 
 ]
 
@@ -111,9 +115,10 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework_json_api.parsers.JSONParser',
+       'rest_framework.renderers.BrowsableAPIRenderer'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework_json_api.renderers.JSONRenderer',
+         'rest_framework_json_api.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer'
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
@@ -227,3 +232,17 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+# CORS Headers configuration
+# https://pypi.org/project/django-cors-headers/
+
+
+
+# Alternatively, specify allowed origins
+CORS_ALLOWED_ORIGINS = [
+     "http://localhost:8080",
+     "http://localhost:8000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8080",
+]
