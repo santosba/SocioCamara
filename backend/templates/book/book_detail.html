@@ -11,4 +11,15 @@
     <p><strong>ISBN:</strong> {{ book.isbn }}</p>
     <p><strong>Summary:</strong> {{ book.summary }}</p>
     <a href="{% url 'book:book-list' %}">Back to Book List</a>
+
+    <h2>Reviews</h2>
+    
+        <ul>
+            {% for review in book.reviews.all %}
+                <li>
+                    <strong>{{ review.review }}:</strong> {{ review.author }}
+                    <em>({{ review.created_at }})</em>
+                </li>
+            {% endfor %}
+        </ul>
 {% endblock %}

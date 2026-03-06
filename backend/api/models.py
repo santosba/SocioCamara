@@ -59,5 +59,5 @@ class OrderItem(models.Model):
         return f"Order {self.order.id} - Product {self.product.name} - Qty {self.quantity}"
     
 
-# Create your models here.
+
 

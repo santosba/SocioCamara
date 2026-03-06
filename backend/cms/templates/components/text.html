@@ -1,0 +1,9 @@
+<!-- cms/templates/components/text.html -->
+<div class="cms-text-component" style="
+    font-size: {{ config.font_size|default:16 }}px;
+    color: {{ config.color|default:'#000000' }};
+    text-align: {{ config.align|default:'left' }};
+    margin: {{ config.margin|default:10 }}px 0;
+">
+    {{ config.content|default:'Enter your text here...' }}
+</div>

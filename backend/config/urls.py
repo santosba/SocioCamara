@@ -15,15 +15,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
-
+from django.urls import path, include
+from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
+                    
 urlpatterns = [
-    path('api/v1/', include('api.urls')),
+    path('api/v1/', include('api.urls')),                                                  
+    #path('api-auth/', include('rest_framework.urls')),
+    path('api-auth/',include('rest_framework.urls')),
     path('admin/', admin.site.urls),
-    path('', include('blog.urls')),
+    path('socio/', include('socio_app.urls')),
+    path('blog', include('blog.urls')),
     path('book/', include('book.urls')),
-    path('accounts/', include('allauth.urls')),
+    path('account/', include('account.urls')),
+    path('cms/', include('cms.urls')),  # Add CMS URLs
 ]
+
+
+###### Redirect root URL to Blog
+
+# Serve media files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
 
 

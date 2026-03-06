@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         user = User.objects.filter(username='admin').first()
         if not user:
-            user = User.objects.create_superuser(username='admin',password='password123')
+            user = User.objects.create_superuser(username='admin',password='password123',email='admin@gmail.com')
         fake = Faker()
         
         # Create Users (10)

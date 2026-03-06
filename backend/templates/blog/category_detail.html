@@ -1,0 +1,54 @@
+{% extends "blog/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <ul class="list-group">
+        {% if categories_articles %}
+        {% for article in categories_articles %}
+        <li class="list-group-item mb-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="image-fit-300">
+                        {% if article.image %}
+                            <img src="{{ article.image.url }}" class="img-fluid rounded" alt="{{ article.title }}">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x300?text=Sem+Imagem" class="img-fluid rounded" alt="Sem imagem">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-8 d-flex flex-column justify-content-center">
+                    <h1>{{ article.title }}</h1>
+                    <p>{{ article.content }}</p>   
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+
+        {% else %}
+
+        <li class="list-group-item">
+            <div class="text-center">
+                <h2>No articles found in this category.</h2>
+            </div>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+
+        <style>
+        .image-fit-300 {
+            width: 300px;
+            height: 300px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .image-fit-300 img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        </style>
+
+{% endblock %}

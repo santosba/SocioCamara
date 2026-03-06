@@ -1,0 +1,20 @@
+<!-- cms/templates/components/button.html -->
+<div class="cms-button-component" style="text-align: {{ config.align|default:'left' }};">
+    <a 
+        href="{{ config.url|default:'#' }}" 
+        class="btn"
+        style="
+            background-color: {{ config.bg_color|default:'#007bff' }};
+            color: {{ config.text_color|default:'white' }};
+            padding: {{ config.padding|default:10 }}px {{ config.padding|default:10|add:10 }}px;
+            text-decoration: none;
+            border-radius: {{ config.border_radius|default:4 }}px;
+            display: inline-block;
+            font-size: {{ config.font_size|default:16 }}px;
+            margin: {{ config.margin|default:10 }}px 0;
+        "
+        {% if config.target %}target="{{ config.target }}"{% endif %}
+    >
+        {{ config.text|default:'Click Me' }}
+    </a>
+</div>

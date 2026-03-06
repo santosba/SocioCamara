@@ -32,6 +32,9 @@ DEBUG = int(os.getenv('DEBUG', 0))
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
+# Site ID for django.contrib.sites and allauth
+SITE_ID = 1
+
 # Application definition
 # Add 'api' to installed apps
 INSTALLED_APPS = [
@@ -49,24 +52,26 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'book.apps.BookConfig',
     'blog.apps.BlogConfig',
-    'allauth',  # Add this line
-    'allauth.account',  # Add this line
-    'allauth.socialaccount', 
+    'socio_app.apps.SocioAppConfig',
+    'cms.apps.CmsConfig',  # Add our CMS app
+    'django.contrib.sites',
     'corsheaders',# Add this line
+    'rest_framework.authtoken',
     
 ]
 
 
 MIDDLEWARE = [
+     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'config.middleware.DisableCSRFMiddleware',  # Add before CSRF middleware
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',  # 
-    'corsheaders.middleware.CorsMiddleware',
+   
 
 ]
 
@@ -114,12 +119,16 @@ DATABASES = {
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
     'DEFAULT_PARSER_CLASSES': (
-        'rest_framework_json_api.parsers.JSONParser',
-       'rest_framework.renderers.BrowsableAPIRenderer'
+       'rest_framework_json_api.parsers.JSONParser',  # JSON:API payloads
+        'rest_framework.parsers.JSONParser',           # normal application/json
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+       #'rest_framework.renderers.BrowsableAPIRenderer'
     ),
     'DEFAULT_RENDERER_CLASSES': (
-         'rest_framework_json_api.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer'
+        'rest_framework.renderers.JSONRenderer',  # JSON first for API clients
+        'rest_framework_json_api.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',  # Browser-friendly last
     ),
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_FILTER_BACKENDS': [
@@ -129,12 +138,21 @@ REST_FRAMEWORK = {
     ],
     'SEARCH_PARAM': 'filter[search]',
     'TEST_REQUEST_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',  # Add regular JSON renderer for tests
         'rest_framework_json_api.renderers.JSONRenderer',
     ),
-    'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json',
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',#'vnd.api+json',
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ]
+        'rest_framework.permissions.AllowAny',  # Allow access for testing
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        #'rest_framework.authentication.BasicAuthentication',  # Comment out to avoid CSRF
+        #'rest_framework.authentication.SessionAuthentication',  # Comment out to avoid CSRF
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    
 }
 
 # Password validation
@@ -170,7 +188,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/ref/settings/#media-root
 THUMBNAIL_SIZE = (300, 300)
 IMAGE_QUALITY = 85
-THUMBNAIL_FORMAT = 'JPEG'
+#THUMBNAIL_FORMAT = 'JPEG'
 ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif']
 MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB
 
@@ -203,17 +221,8 @@ AUTH_USER_MODEL = 'api.User'
 LOGIN_REDIRECT_URL = 'blog_index'
 
 # django-crispy-forms
-CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap'
-CRISPY_TEMPLATE_PACK ="bootstrap5" # new 
-
-
-# django-allauth settings
-#ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-#ACCOUNT_SIGNUP_FIELDS = ['email*']  # Specify the fields to display on the signup form
-#ACCOUNT_LOGIN_ATTEMPTS_LIMIT = 5
-#ACCOUNT_LOGOUT_REDIRECT_URL = 'account_login'
-LOGIN_REDIRECT_URL = 'blog_index'
-#ACCOUNT_USERNAME_REQUIRED = False
+CRISPY_ALLOWED_TEMPLATE_PACKS = ['bootstrap4','bootstrap5']
+CRISPY_TEMPLATE_PACK ="bootstrap5" # new
 
 
 
@@ -230,19 +239,23 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', '')
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
 # CORS Headers configuration
 # https://pypi.org/project/django-cors-headers/
 
-
-
 # Alternatively, specify allowed origins
-CORS_ALLOWED_ORIGINS = [
-     "http://localhost:8080",
-     "http://localhost:8000",
-]
+CORS_ALLOW_ALL_ORIGINS = True  # Para testes apenas!
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
+    "http://localhost:8000",
 ]
+
+# CSRF settings for API
+CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript to read CSRF cookie
+CSRF_USE_SESSIONS = False  # Don't tie CSRF to sessions
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False  # Set to False for development (localhost)
+CSRF_COOKIE_NAME = 'csrftoken'  # Default name
+# Disable CSRF for API endpoints to avoid form submission issues
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'

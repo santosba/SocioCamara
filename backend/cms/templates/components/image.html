@@ -1,0 +1,19 @@
+<!-- cms/templates/components/image.html -->
+<div class="cms-image-component" style="text-align: {{ config.align|default:'left' }};">
+    <img 
+        src="{{ config.src|default:'/static/placeholder.jpg' }}" 
+        alt="{{ config.alt|default:'Image' }}"
+        style="
+            width: {{ config.width|default:100 }}%;
+            max-width: {{ config.max_width|default:600 }}px;
+            height: {{ config.height|default:'auto' }};
+            border-radius: {{ config.border_radius|default:0 }}px;
+            margin: {{ config.margin|default:10 }}px 0;
+        "
+    />
+    {% if config.caption %}
+        <p style="font-size: 14px; color: #666; margin-top: 5px;">
+            {{ config.caption }}
+        </p>
+    {% endif %}
+</div>

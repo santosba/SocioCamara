@@ -15,6 +15,7 @@ class BookListView(ListView):
     model = Book
     queryset = Book.objects.all()
     context_object_name ='books'
+    login_url = 'login'
 
 
 
@@ -32,6 +33,7 @@ class BookDetailView(DetailView):
     model = Book
     template_name = 'book/book_detail.html'
     queryset = Book.objects.all()
+    login_url = 'login'
 
     def get_object(self):
         id_ = self.kwargs.get('id')

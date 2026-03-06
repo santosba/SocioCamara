@@ -6,7 +6,6 @@
 
 {% block title %}Book List{% endblock %}
 {% block content %}
-
 <style>
     .card-img-top {
         object-fit: cover; /* Mantém o aspecto correto */
@@ -14,6 +13,7 @@
         width: 100%;      /* Ajusta a largura ao cartão */
     }
 </style>
+
 <div class="container">
     <div class="row">
         <!-- Blog entries-->
@@ -36,13 +36,17 @@
                 {% for book in books %}
                 <div class="col-lg-6">
                     <div class="card mb-4">
-                        <a href=" {% url 'book:detail' book.id%}"><img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}"></a>
+                        {% if book.cover %}
+                        <a href=" {% url 'book:book-detail' book.id%}"><img src="{{ book.cover.url }}" class="card-img-top" alt="{{ book.title }}"></a>
                         <div class="card-body">
                             <div class="small text-muted"></div>
                             <h2 class="card-title h4">{{ book.title }}</h2>
                             <p class="card-text">{{ book.author }}</p>
-                            <a class="btn btn-primary" href=" {% url 'book:detail' book.id%}">Read more →</a>
+                            <a class="btn btn-primary" href=" {% url 'book:book-detail' book.id%}">Read more →</a>
                         </div>
+                        {% else %}
+                    <span>No cover image</span>
+                {% endif %}
                     </div>
                 </div>
                 {% endfor %}

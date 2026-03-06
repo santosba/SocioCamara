@@ -1,4 +1,4 @@
- {% extends "base.html" %}
+{% extends "blog/base.html" %}
  {% load crispy_forms_tags %}
 {% block content %}
 
@@ -7,71 +7,104 @@
         <!-- Blog entries-->
         <div class="col-lg-8">
             <!-- Featured blog post-->
-            {% block feactured %}
-            <div class="card mb-4">
-                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/850x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                <div class="card-body">
-                    <div class="small text-muted">January 1, 2023</div>
-                    <h2 class="card-title">Featured Post Title</h2>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!</p>
-                    <a class="btn btn-primary" href="#!">Read more →</a>
+            {% block featured %}
+        
+           
+                <div class="card mb-4">
+                      {% if featured_article.image %}
+                    <a href="{% url 'blog:article_detail' featured_article.id %}">
+                    <img class="card-img-top" src="{{ featured_article.image.url }}" alt="{{ article.title }}" style="width: 600px; height: 350px; object-fit: cover;" />
+                        {% else %}  
+                        <img class="card-img-top" src="{{ article.image.url|default:'https://dummyimage.com/850x350/dee2e6/6c757d.jpg' }}" alt="{{ article.title }}" />                      
+                    </a>
+                     {% endif %}
+                    <div class="card-body">
+                        <div class="small text-muted">{{ featured_article.created_at|date:"F j, Y" }}</div>
+                        <h2 class="card-title">{{ featured_article.title }}</h2>
+                        <p class="card-text">{{ featured_article.content|truncatewords:30 }}</p>
+                        {% if featured_article.id %}
+                        <a class="btn btn-primary" href="{% url 'blog:article-detail' featured_article.id %}">Read more →</a>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+        
+              
             {% endblock %}
             <!-- Nested row for non-featured blog posts-->
             {% block post %}
 
             <div class="row">
+                {% for article in normal_articles %}
                 <div class="col-lg-4">
                     <div class="card mb-4">
-                        <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                        <a href="{{ article.get_absolute_url }}"><img class="card-img-top" src="{{ article.image.url|default:'https://dummyimage.com/700x350/dee2e6/6c757d.jpg' }}" alt="..." /></a>
                         <div class="card-body">
-                            <div class="small text-muted">January 1, 2023</div>
-                            <h2 class="card-title h4">Post Title 1</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla?</p>
-                            <a class="btn btn-primary" href="#!">Read more →</a>
+                            <div class="small text-muted">{{ article.created_at|date:"F j, Y" }}</div>
+                            <h2 class="card-title h4">{{ article.title }}</h2>
+                            <p class="card-text">{{ article.content|truncatewords:30 }}</p>
+                            <a class="btn btn-primary" href="{{ article.get_absolute_url}}">Read more →</a> 
+                            <!-- url 'blog:article-detail' article.id %d -->
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4">
-                    <div class="card mb-4">
-                        <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                        <div class="card-body">
-                            <div class="small text-muted">January 1, 2023</div>
-                            <h2 class="card-title h4">Post Title 2</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla?</p>
-                            <a class="btn btn-primary" href="#!">Read more →</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card mb-4">
-                        <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                        <div class="card-body">
-                            <div class="small text-muted">January 1, 2023</div>
-                            <h2 class="card-title h4">Post Title 3</h2>
-                            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla?</p>
-                            <a class="btn btn-primary" href="#!">Read more →</a>
-                        </div>
-                    </div>
-                </div>
+
+        
+                {% endfor %}
+              
             </div>
             
             {% endblock %}
             <!-- Pagination-->
             {% block pagination %}
+            {% if is_paginated %}
             <nav aria-label="Pagination">
                 <hr class="my-0" />
                 <ul class="pagination justify-content-center my-4">
-                    <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a></li>
-                    <li class="page-item active" aria-current="page"><a class="page-link" href="#!">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">3</a></li>
-                    <li class="page-item disabled"><a class="page-link" href="#!">...</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">15</a></li>
-                    <li class="page-item"><a class="page-link" href="#!">Older</a></li>
+                    <!-- Previous page link -->
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Newer</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Newer</a>
+                        </li>
+                    {% endif %}
+                    
+                    <!-- Page numbers -->
+                    {% for page_num in paginator.page_range %}
+                        {% if page_num == page_obj.number %}
+                            <li class="page-item active" aria-current="page">
+                                <a class="page-link" href="#">{{ page_num }}</a>
+                            </li>
+                        {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                        {% elif page_num == 1 or page_num == paginator.num_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                            </li>
+                        {% elif page_num == page_obj.number|add:'-4' or page_num == page_obj.number|add:'4' %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">...</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Next page link -->
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Older</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-disabled="true">Older</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </nav>
+            {% endif %}
             {% endblock %}
         </div>
         <!-- Side widgets-->
@@ -81,10 +114,12 @@
             <div class="card mb-4">
                 <div class="card-header">Search</div>
                 <div class="card-body">
-                    <div class="input-group">
-                        <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
-                        <button class="btn btn-primary" id="button-search" type="button">Go!</button>
-                    </div>
+                    <form method="get" action="{% url 'blog:search_results' %}">
+                        <div class="input-group">
+                            <input class="form-control" type="text" name="q" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
+                            <button class="btn btn-primary" id="button-search" type="submit">Go!</button>
+                        </div>
+                    </form>
                 </div>
             </div>
             {% endblock %}
@@ -95,18 +130,23 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <ul class="list-unstyled mb-0">
-                                <li><a href="#!">Web Design</a></li>
-                                <li><a href="#!">HTML</a></li>
-                                <li><a href="#!">Freebies</a></li>
-                            </ul>
-                        </div>
-                        <div class="col-sm-6">
+                        {% for category in categories|slice:":3" %}
+                            <li><a href="{% url 'blog:category_detail' category.id %}">{{ category.name }}</a></li>
+                        {% empty %}
+                            <li>No categories available.</li>
+                        {% endfor %}
+                        </ul>
+                        </div>  
+                        
+                         <div class="col-sm-6">
                             <ul class="list-unstyled mb-0">
-                                <li><a href="#!">JavaScript</a></li>
-                                <li><a href="#!">CSS</a></li>
-                                <li><a href="#!">Tutorials</a></li>
-                            </ul>
-                        </div>
+                        {% for category in categories|slice:"3:" %}
+                            <li><a href="{% url 'blog:category_detail' category.id %}">{{ category.name }}</a></li>
+                        {% empty %}
+                            <li>No categories available.</li>
+                        {% endfor %}
+                        </ul>
+                        </div>     
                     </div>
                 </div>
             </div>
@@ -123,11 +163,11 @@
 
 
 
-{% if user.is_authenticated %}
+<!--{% if user.is_authenticated %}
 <p>Hi {{ user.email }}!</p>
 {% else %}
 <p>You are not logged in</p>
-<a href="{% url 'account_login' %}" style="display: inline-block;">Log In</a> 
-| <a href="{% url 'account_signup' %}" style="display: inline-block;">Sign Up</a>
+<a href="{% url 'login' %}" style="display: inline-block;">Log In</a> 
+| <a href="{% url 'register' %}" style="display: inline-block;">Sign Up</a>
 {% endif %}
-{% endblock content %}
+{% endblock content %} -->

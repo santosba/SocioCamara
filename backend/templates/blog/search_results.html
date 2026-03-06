@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="mb-4">Search Results</h1>
+
+    {% if search_results %}
+        <ul class="list-group">
+            {% for post in search_results %}
+                <li class="list-group-item">
+                    <a href="{% url 'blog:article_detail' post.id %}" class="fw-bold">{{ post.title }}</a>
+                    <br>
+                    <small class="text-muted">Published on {{ post.created_at|date:"F j, Y" }}</small>
+                    <p class="mb-0">{{ post.content|truncatewords:30 }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            No results found.
+        </div>
+    {% endif %}
+{% endblock %}

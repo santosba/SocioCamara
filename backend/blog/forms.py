@@ -4,13 +4,15 @@ from .models import Article
 class UnifiedArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = ['title', 'content', 'is_published', 'author', 'image', 'article_type']
+        fields = ['title', 'slug', 'content', 'is_published', 'author', 'image', 'article_type']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control'}),
             'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
             'article_type': forms.Select(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
